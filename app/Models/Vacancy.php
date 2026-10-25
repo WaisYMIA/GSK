@@ -1,0 +1,3 @@
+<?php
+namespace App\Models; use Illuminate\Database\Eloquent\Model; use Illuminate\Database\Eloquent\SoftDeletes;
+class Vacancy extends Model { use SoftDeletes; protected $fillable=['organisation_id','programme_id','title','slug','description','country_code','employment_type','status','published_at','closes_at']; protected function casts():array{return ['published_at'=>'datetime','closes_at'=>'datetime'];} public function organisation(){return $this->belongsTo(Organisation::class);} public function applications(){return $this->hasMany(Application::class);} public function scopePubliclyVisible($q){return $q->where('status','published')->whereHas('organisation',fn($o)=>$o->where('verification_status','verified')->whereNotNull('verified_at'));} }

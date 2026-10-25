@@ -1,0 +1,3 @@
+<?php
+namespace App\Models; use Illuminate\Database\Eloquent\Model; use Illuminate\Database\Eloquent\SoftDeletes;
+class WelfareCase extends Model { use SoftDeletes; protected $fillable=['public_reference','reporter_user_id','is_anonymous','category','severity','status','description','encrypted_contact_details','followup_token_hash','acknowledged_at','resolved_at']; protected $hidden=['encrypted_contact_details','followup_token_hash']; protected function casts():array{return ['is_anonymous'=>'boolean','acknowledged_at'=>'datetime','resolved_at'=>'datetime','encrypted_contact_details'=>'encrypted'];} public function events(){return $this->hasMany(WelfareCaseEvent::class);} }

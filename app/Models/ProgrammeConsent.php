@@ -1,0 +1,3 @@
+<?php
+namespace App\Models; use Illuminate\Database\Eloquent\Model;
+class ProgrammeConsent extends Model { protected $fillable=['user_id','programme_id','purpose','notice_version','legal_basis','data_categories','recipient_country','recipient_name','granted_at','withdrawn_at']; protected function casts():array{return ['data_categories'=>'array','granted_at'=>'datetime','withdrawn_at'=>'datetime'];} public function user(){return $this->belongsTo(User::class);} public function programme(){return $this->belongsTo(Programme::class);} public function isActive():bool{return $this->granted_at!==null && $this->withdrawn_at===null;} }

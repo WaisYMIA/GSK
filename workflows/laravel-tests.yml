@@ -1,0 +1,50 @@
+name: Laravel tests
+on:
+  push:
+  pull_request:
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: gsk_test
+          MYSQL_USER: gsk_app
+          MYSQL_PASSWORD: gsk_test_password
+          MYSQL_ROOT_PASSWORD: root_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot_password"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, ctype, fileinfo, json, openssl, pdo_mysql, tokenizer, xml, gd
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Bootstrap Laravel app from scaffold
+        run: ./scripts/bootstrap-laravel.sh "$RUNNER_TEMP/gsk-app"
+      - name: Configure test database
+        working-directory: ${{ runner.temp }}/gsk-app
+        run: |
+          sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+          sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=gsk_test/' .env
+          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=gsk_app/' .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=gsk_test_password/' .env
+          cp .env .env.testing
+          sed -i 's/^APP_ENV=.*/APP_ENV=testing/' .env.testing
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=gsk_test/' .env.testing
+      - name: Run migrations
+        working-directory: ${{ runner.temp }}/gsk-app
+        run: php artisan migrate:fresh --seed --force
+      - name: Run automated tests
+        working-directory: ${{ runner.temp }}/gsk-app
+        run: php artisan test

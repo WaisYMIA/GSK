@@ -1,0 +1,18 @@
+# GSK policy decision register
+
+Status: **Baseline approved by the project owner on 2026-10-13**. This records approval of the principles below, not a substitute for jurisdiction-specific legal review, safeguarding sign-off, or payment-provider confirmation. Before production, record named accountable owners, effective versions, and any operational values that remain to be set (including retention periods and response targets).
+
+| ID | Decision | Proposed baseline | Must be settled before | Acceptance evidence |
+|---|---|---|---|---|
+| POL-01 | Anonymous welfare follow-up | Allow anonymous intake; issue high-entropy one-time credential, store only a hash, rate-limit lookups; clearly warn it cannot be recovered. Do not require identity to report. | Welfare case follow-up UI/API | Anonymous case works without account; credential cannot be guessed; identity remains absent; brute-force controls and audit events tested. |
+| POL-02 | Retention/deletion | Define category-by-category schedule for candidate records, applications, welfare records, donor records, audit logs, and consent evidence; include legal holds, backup expiry and anonymisation. No blanket retention duration should be invented. | Production data import and launch | Approved schedule; scheduled deletion/anonymisation job; legal hold tests; deletion and access logs; restore/backup expiry documented. |
+| POL-03 | Recurring donation capability | One-time card and M-Pesa transactions can launch independently; recurring frequency enabled only for a provider/payment rail that contractually and technically supports mandates, cancellation, retries and webhooks. | Recurring payment build | Provider capability matrix; sandbox evidence; signed mandate consent; idempotent webhook tests; cancellation stops future collection. |
+| POL-04 | Employer verification | Verify legal entity, registration evidence, authorised representative, contact/domain and relevant recruitment licences where required. Only active verified organisations can publish; expire/suspend access when status changes. | Employer portal and vacancy publishing | Checklist and approver workflow; audit trail; unverified/suspended employer publish tests fail. |
+| POL-05 | International sharing | Programme-specific notice; purpose, recipient, destination country and data categories recorded. Obtain consent where it is the appropriate basis; assess other lawful bases and cross-border transfer obligations. Data minimisation and withdrawal/future-use handling required. | Candidate matching and external disclosure | Versioned notice and consent record; legal review; withdrawal and expired/missing consent tests; disclosure log records recipient, country, purpose, categories and basis. |
+| POL-06 | Urgent welfare escalation | Define severity taxonomy, duty owner and backup, acknowledgement/response targets, after-hours coverage, emergency partner contacts, escalation tree and safe communication plan. Do not publish a 24/7 promise until staffing exists. | Welfare triage and public service promises | Approved runbook and rota; simulated urgent case reaches primary and backup; timestamped escalation logs; service-level dashboard and periodic drills. |
+
+## Cross-cutting guardrails
+- Welfare-case data is segregated from employer/recruitment views by default.
+- Use least privilege, MFA for privileged accounts, rate limits, CSRF protections where relevant, secure headers, private file storage, malware scanning, and audit logging without secrets or sensitive report bodies.
+- Payment card details are handled by a compliant hosted/tokenised provider; never store PAN/CVV.
+- Do not deploy seed accounts, debug mode, test credentials or incomplete tests to production.
